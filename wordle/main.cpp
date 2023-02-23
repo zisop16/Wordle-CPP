@@ -1,17 +1,13 @@
 #include <iostream>
-
+#include "wordle_art.h"
+#include <vector>
 
 using namespace std;
 
-void printLetter(char c) {
-
-}
-
 int main(int argc, char* argv[]) {
-
-    /*
-        your code goes here
-    */
-
+    vector<int> colors = defaultColors(5);
+    colors[1] = green;
+    string letters = "HELLO";
+    fancyLine(letters, colors);
     return 0;
 }
