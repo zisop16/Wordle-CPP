@@ -9,6 +9,7 @@ enum color {
     green=10,
     yellow=14,
     gray=8,
+    grey=8,
     white=15
 };
 
@@ -55,9 +56,33 @@ void fancyLine(std::string letters, std::vector<int> colors) {
 }
 
 void howToPlay() {
-    int lineLength = 25;
     std::cout << "=============================================" << std::endl;
+    std::cout << "                 HOW TO PLAY" << std::endl;
+    std::cout << "=============================================" << std::endl;
+    std::cout << "Guess the Wordle in 6 tries.\n\n" << std::endl;
 
+
+    std::cout << "HOW TO PLAY:" << std::endl;
+    std::cout << "- Each guess must be a valid 5 letter word." << std::endl;
+    std::cout << "- The color of the tiles will change to show" << std::endl;
+    std::cout << "  you how close your guess was to the word.\n\n" << std::endl;
+    
+    
+    std::vector<int> colors = defaultColors(5);
+    colors[0] = green;
+    std::string letters = "WEARY";
+    fancyLine(letters, colors);
+    std::cout << "W is in the word and in the correct spot.\n" << std::endl;
+    colors[0] = white;
+    colors[1] = yellow;
+    letters = "PILLS";
+    fancyLine(letters, colors);
+    std::cout<<"I is in the word but in the wrong spot.\n" << std::endl;
+    colors[1] = white;
+    colors[3] = grey;
+    letters = "VAGUE";
+    fancyLine(letters, colors);
+    std::cout<<"U is not in the word in any spot.\n\n" << std::endl;
 }
 
 #endif
