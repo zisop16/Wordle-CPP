@@ -2,7 +2,8 @@
 #define GAME_MANAGER_H
 
 #include <iostream>
-#include "wordle_art.h"
+#include "../../wordle_art.h"
+#include "stats_manager.h"
 #include <stdlib.h>
 #include <fstream>
 #include <random>
@@ -150,6 +151,7 @@ void playGame()
         initializeWords();
     }
     int max = words.size();
+    std::srand(std::time(nullptr));
     int randIndex = std::rand() % max;
     std::string correctWord = words[randIndex];
     std::cout << "Correct Word: " << correctWord << std::endl;
@@ -157,20 +159,39 @@ void playGame()
     int maxGuesses = 6;
     std::vector<std::string> pastGuesses;
     std::vector<std::vector<int>> pastColors;
+    bool foundSolution = false;
+    int attempts = 0;
     for (int guessNum = 0; guessNum < maxGuesses; guessNum++)
     {
+        attempts += 1;
         std::string guess = getGuess();
         std::vector<int> colors = guessColors(guess, correctWord);
         pastGuesses.push_back(guess);
         pastColors.push_back(colors);
-        std::system("CLS");
+        clearScreen();
         for (unsigned int i = 0; i < pastGuesses.size(); i++)
         {
             std::string currGuess = pastGuesses.at(i);
             std::vector<int> currColors = pastColors.at(i);
             fancyLine(currGuess, currColors);
         }
+        if (guess == correctWord)
+        {
+            foundSolution = true;
+            break;
+        }
     }
+    if (foundSolution)
+    {
+        std::cout << "\nSplendid!\n"
+                  << std::endl;
+    }
+    else
+    {
+        std::cout << "\nThe word was: " << toUpper(correctWord) << "\n\nBetter luck next time!\n"
+                  << std::endl;
+    }
+    addToStats(correctWord, attempts, foundSolution);
 }
 
 int respondToOption()
@@ -178,7 +199,7 @@ int respondToOption()
     int option;
     std::cin >> option;
     std::cin.ignore();
-    std::system("CLS");
+    clearScreen();
     switch (option)
     {
     case play:
@@ -188,8 +209,10 @@ int respondToOption()
         howToPlay();
         break;
     case stats:
+        showStats();
         break;
     case reset:
+        resetStats();
         break;
     case quit:
         break;
@@ -201,7 +224,7 @@ void runGame()
 {
     while (true)
     {
-        std::system("CLS");
+        clearScreen();
         menuText();
         int option = respondToOption();
         if (option == quit)

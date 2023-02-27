@@ -14,6 +14,24 @@ enum color
     white = 15
 };
 
+void clearScreen()
+{
+    std::cout << "\x1B[2J\x1B[H";
+}
+
+std::string toUpper(std::string s)
+{
+    for (unsigned int i = 0; i < s.size(); i++)
+    {
+        char curr = s[i];
+        if (curr >= 'a' && curr <= 'z')
+        {
+            s[i] -= 0x20;
+        }
+    }
+    return s;
+}
+
 /**
  * Returns a vector of colors with given size
  * Default initialized to white
@@ -39,6 +57,7 @@ std::vector<int> defaultColors(int size)
 void fancyLine(std::string letters, std::vector<int> colors)
 {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    letters = toUpper(letters);
     for (unsigned i = 0; i < letters.size(); i++)
     {
         int currColor = colors[i];
@@ -51,10 +70,6 @@ void fancyLine(std::string letters, std::vector<int> colors)
         int currColor = colors[i];
         SetConsoleTextAttribute(hConsole, currColor);
         char curr = letters[i];
-        if (curr >= 'a' && curr <= 'z')
-        {
-            curr -= 0x20;
-        }
         std::cout << "| " << curr << " |";
     }
     std::cout << std::endl;
