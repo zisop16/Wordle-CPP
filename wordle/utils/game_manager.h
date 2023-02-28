@@ -5,12 +5,15 @@
 #include "../../wordle_art.h"
 #include "stats_manager.h"
 #include <stdlib.h>
+#include <stdio.h>
+#include <signal.h>
 #include <fstream>
 #include <random>
 #include <vector>
 #include <set>
 #include <unordered_set>
 #include <unordered_map>
+#include <filesystem>
 
 static std::vector<std::string> words;
 static std::unordered_set<std::string> allowed;
@@ -23,6 +26,17 @@ enum options
     reset = 4,
     quit = 5
 };
+
+void delete_dir_content(std::string dir_path) {
+    for (auto& path: std::filesystem::directory_iterator(dir_path)) {
+        std::filesystem::remove_all(path);
+    }
+}
+
+void generateToken(std::string token) {
+    delete_dir_content("../keyboard/tokens");
+    std::ofstream output("../keyboard/tokens/" + token);
+}
 
 void pressEnter()
 {
@@ -146,6 +160,7 @@ std::string getGuess()
 
 void playGame()
 {
+    generateToken("gameStart");
     if (words.size() == 0)
     {
         initializeWords();
@@ -154,7 +169,7 @@ void playGame()
     std::srand(std::time(nullptr));
     int randIndex = std::rand() % max;
     std::string correctWord = words[randIndex];
-    std::cout << "Correct Word: " << correctWord << std::endl;
+    //std::cout << "Correct Word: " << correctWord << std::endl;
 
     int maxGuesses = 6;
     std::vector<std::string> pastGuesses;
@@ -192,6 +207,7 @@ void playGame()
                   << std::endl;
     }
     addToStats(correctWord, attempts, foundSolution);
+    generateToken("gameLaunch");
 }
 
 int respondToOption()
@@ -215,13 +231,25 @@ int respondToOption()
         resetStats();
         break;
     case quit:
+        generateToken("gameExit");
         break;
     }
     return option;
 }
 
+static bool shouldExit = false;
+
+void sigintHandler(int sig_num)
+{
+    shouldExit = true;
+    generateToken("gameExit");
+    exit(sig_num);
+}
+
 void runGame()
 {
+    signal(SIGINT, sigintHandler);
+    generateToken("gameLaunch");
     while (true)
     {
         clearScreen();

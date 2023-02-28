@@ -54,10 +54,11 @@ std::vector<int> defaultColors(int size)
  *  ---
  * Precondition: letters.size() == colors.size()
  */
-void fancyLine(std::string letters, std::vector<int> colors)
+void fancyLine(std::string letters, std::vector<int> colors, int space=0)
 {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     letters = toUpper(letters);
+    std::cout << std::string(space, ' ');
     for (unsigned i = 0; i < letters.size(); i++)
     {
         int currColor = colors[i];
@@ -65,6 +66,7 @@ void fancyLine(std::string letters, std::vector<int> colors)
         std::cout << " --- ";
     }
     std::cout << std::endl;
+    std::cout << std::string(space, ' ');
     for (unsigned i = 0; i < letters.size(); i++)
     {
         int currColor = colors[i];
@@ -73,6 +75,7 @@ void fancyLine(std::string letters, std::vector<int> colors)
         std::cout << "| " << curr << " |";
     }
     std::cout << std::endl;
+    std::cout << std::string(space, ' ');
     for (unsigned i = 0; i < letters.size(); i++)
     {
         int currColor = colors[i];
