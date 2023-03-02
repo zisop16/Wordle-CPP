@@ -77,6 +77,39 @@ std::unordered_map<char, std::string> resetKeyColors()
     return keyColors;
 }
 
+std::unordered_map<char, std::string> updateColors(std::unordered_map<char, std::string> keyColors) {
+    std::string colorPath = "color.txt";
+    if (!std::filesystem::exists(colorPath)) {
+        return keyColors;
+    }
+    /*
+    Format of color file:
+    agreen
+    cyellow
+    tgrey
+    ogrey
+    ryellow
+    */
+    std::vector<std::string> lines;
+    std::ifstream colorFile (colorPath);
+    if (colorFile.is_open()) {
+        while (colorFile) {
+            std::string currLine;
+            colorFile >> currLine;
+            lines.push_back(currLine);
+        }
+    }
+    for (int i = 0; i < 5; i++) {
+        std::string curr = lines.at(i);
+        char letter = curr[0];
+        std::string color = curr.substr(1, curr.size() - 1);
+        keyColors[letter] = color;
+    }
+    colorFile.close();
+    std::remove("./color.txt");
+    return keyColors;
+}
+
 void runKeyboard()
 {
     int status = awaitLaunch;
@@ -120,6 +153,10 @@ void runKeyboard()
         {
             status = gameActive;
             keyColors = resetKeyColors();
+            update = true;
+        } 
+        else if (getToken("updateColors")) {
+            keyColors = updateColors(keyColors);
             update = true;
         }
         else if (getToken("gameExit"))

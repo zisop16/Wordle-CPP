@@ -52,6 +52,26 @@ void pressEnter()
     std::cin.ignore();
 }
 
+static std::string colorFilePath = "../keyboard/color.txt";
+
+void writeColors(std::string letters, std::vector<std::string> colors) {
+    for (int i = 0; i < letters.size(); i++) {
+        if ('a' <= letters[i] && 'z' >= letters[i]) {
+            letters[i] += 'A' - 'a';
+        }
+    }
+    std::ofstream colorFile(colorFilePath);
+    if (colorFile.is_open()) {
+        for (unsigned int i = 0; i < colors.size(); i++) {
+            std::string currLine = letters[i] + colors[i];
+            colorFile << currLine;
+            if (i != colors.size() - 1) {
+                colorFile << "\n";
+            }
+        }
+    }
+}
+
 std::vector<std::string> readLines(std::string filename)
 {
     std::vector<std::string> lines;
@@ -198,6 +218,8 @@ void playGame()
             std::vector<std::string> currColors = pastColors.at(i);
             fancyLine(currGuess, currColors);
         }
+        writeColors(guess, colors);
+        generateToken("updateColors");
         if (guess == correctWord)
         {
             foundSolution = true;
@@ -217,6 +239,14 @@ void playGame()
     addToStats(correctWord, attempts, foundSolution);
     generateToken("gameLaunch");
 }
+
+void onExit() {
+    generateToken("gameExit");
+    if (std::filesystem::exists(colorFilePath)) {
+        std::remove(colorFilePath.c_str());
+    }
+}
+
 
 int respondToOption()
 {
@@ -246,18 +276,15 @@ int respondToOption()
         resetStats();
         break;
     case quit:
-        generateToken("gameExit");
+        onExit();
         break;
     }
     return option;
 }
 
-static bool shouldExit = false;
-
 void sigintHandler(int sig_num)
 {
-    shouldExit = true;
-    generateToken("gameExit");
+    onExit();
     exit(sig_num);
 }
 

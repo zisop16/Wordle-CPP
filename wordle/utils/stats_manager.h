@@ -135,7 +135,7 @@ void showStats()
     std::cout << "WORD     ATTEMPTS      WIN" << std::endl;
     std::cout << "--------------------------" << std::endl;
     unsigned int startingInd;
-    int gamesListed = 6;
+    unsigned int gamesListed = 6;
     if (games.size() < gamesListed)
     {
         startingInd = 0;
