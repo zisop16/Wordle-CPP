@@ -23,19 +23,27 @@ enum options
     play = 1,
     guide = 2,
     stats = 3,
-    reset = 4,
+    userReset = 4,
     quit = 5
 };
 
-void delete_dir_content(std::string dir_path) {
-    for (auto& path: std::filesystem::directory_iterator(dir_path)) {
+void delete_dir_content(std::string dir_path)
+{
+    for (auto &path : std::filesystem::directory_iterator(dir_path))
+    {
         std::filesystem::remove_all(path);
     }
 }
 
-void generateToken(std::string token) {
-    delete_dir_content("../keyboard/tokens");
-    std::ofstream output("../keyboard/tokens/" + token);
+void generateToken(std::string token)
+{
+    const std::string tokenPath = "../keyboard/tokens";
+    if (!std::filesystem::exists(tokenPath))
+    {
+        std::filesystem::create_directory(tokenPath);
+    }
+    delete_dir_content(tokenPath);
+    std::ofstream output(tokenPath + "/" + token);
 }
 
 void pressEnter()
@@ -72,9 +80,9 @@ void initializeWords()
     }
 }
 
-std::vector<int> guessColors(std::string guess, std::string correctWord)
+std::vector<std::string> guessColors(std::string guess, std::string correctWord)
 {
-    std::vector<int> colors = defaultColors(5);
+    std::vector<std::string> colors = defaultColors(5);
     /* Map from char -> vector of indices for guess
      * Ex: guess = "hello"
      * characterIndices = {
@@ -169,25 +177,25 @@ void playGame()
     std::srand(std::time(nullptr));
     int randIndex = std::rand() % max;
     std::string correctWord = words[randIndex];
-    //std::cout << "Correct Word: " << correctWord << std::endl;
+    // std::cout << "Correct Word: " << correctWord << std::endl;
 
     int maxGuesses = 6;
     std::vector<std::string> pastGuesses;
-    std::vector<std::vector<int>> pastColors;
+    std::vector<std::vector<std::string>> pastColors;
     bool foundSolution = false;
     int attempts = 0;
     for (int guessNum = 0; guessNum < maxGuesses; guessNum++)
     {
         attempts += 1;
         std::string guess = getGuess();
-        std::vector<int> colors = guessColors(guess, correctWord);
+        std::vector<std::string> colors = guessColors(guess, correctWord);
         pastGuesses.push_back(guess);
         pastColors.push_back(colors);
-        clearScreen();
+        std::cout << clearScreen;
         for (unsigned int i = 0; i < pastGuesses.size(); i++)
         {
             std::string currGuess = pastGuesses.at(i);
-            std::vector<int> currColors = pastColors.at(i);
+            std::vector<std::string> currColors = pastColors.at(i);
             fancyLine(currGuess, currColors);
         }
         if (guess == correctWord)
@@ -212,10 +220,17 @@ void playGame()
 
 int respondToOption()
 {
-    int option;
-    std::cin >> option;
+    std::string input;
+    std::cin >> input;
     std::cin.ignore();
-    clearScreen();
+    if (input.size() != 1 || !(input[0] >= '0' && input[1] <= '5'))
+    {
+        std::cout << "Please enter one of the given options" << std::endl;
+        return respondToOption();
+    }
+    // '1' - '0' == 1
+    int option = input[0] - '0';
+    std::cout << clearScreen;
     switch (option)
     {
     case play:
@@ -227,7 +242,7 @@ int respondToOption()
     case stats:
         showStats();
         break;
-    case reset:
+    case userReset:
         resetStats();
         break;
     case quit:
@@ -252,7 +267,7 @@ void runGame()
     generateToken("gameLaunch");
     while (true)
     {
-        clearScreen();
+        std::cout << clearScreen;
         menuText();
         int option = respondToOption();
         if (option == quit)

@@ -34,40 +34,44 @@ bool getToken(std::string token)
     return exists;
 }
 
-std::vector<int> lineColors(std::unordered_map<char, int> keyColors, std::string line) {
-    std::vector<int> colors = defaultColors(line.size());
-    for (unsigned int i = 0; i < line.size(); i++) {
+std::vector<std::string> lineColors(std::unordered_map<char, std::string> keyColors, std::string line)
+{
+    std::vector<std::string> colors = defaultColors(line.size());
+    for (unsigned int i = 0; i < line.size(); i++)
+    {
         colors[i] = keyColors.at(line[i]);
     }
     return colors;
 }
 
 /*
-keyColors is a map from char to int of form:
+keyColors is a map from char to string of form:
 keyColors = {
     'a': white,
     'b': green,
     'c': grey
 };
 */
-void displayKeyboard(std::unordered_map<char, int> keyColors)
+void displayKeyboard(std::unordered_map<char, std::string> keyColors)
 {
     std::string line1 = "QWERTYUIOP";
     std::string line2 = "ASDFGHJKL";
     std::string line3 = "ZXCVBNM";
-    std::vector<int> line1Colors = lineColors(keyColors, line1);
-    std::vector<int> line2Colors = lineColors(keyColors, line2);
-    std::vector<int> line3Colors = lineColors(keyColors, line3);
-    clearScreen();
+    std::vector<std::string> line1Colors = lineColors(keyColors, line1);
+    std::vector<std::string> line2Colors = lineColors(keyColors, line2);
+    std::vector<std::string> line3Colors = lineColors(keyColors, line3);
+    std::cout << clearScreen;
     fancyLine(line1, line1Colors);
     fancyLine(line2, line2Colors, 2);
     fancyLine(line3, line3Colors, 7);
 }
 
-std::unordered_map<char, int> resetColors() {
-    std::unordered_map<char, int> keyColors;
+std::unordered_map<char, std::string> resetKeyColors()
+{
+    std::unordered_map<char, std::string> keyColors;
     std::string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    for (unsigned int i = 0; i < alphabet.size(); i++) {
+    for (unsigned int i = 0; i < alphabet.size(); i++)
+    {
         keyColors[alphabet[i]] = white;
     }
     return keyColors;
@@ -76,33 +80,34 @@ std::unordered_map<char, int> resetColors() {
 void runKeyboard()
 {
     int status = awaitLaunch;
-    std::unordered_map<char, int> keyColors;
+    std::unordered_map<char, std::string> keyColors;
     bool update = true;
     while (true)
     {
         sleep();
-        if (update) {
+        if (update)
+        {
             switch (status)
             {
-                case awaitLaunch:
-                {
-                    clearScreen();
-                    std::cout << "Please launch the Wordle Game" << std::endl;
-                    sleep();
-                    break;
-                }
-                case awaitGame:
-                {
-                    clearScreen();
-                    std::cout << "Waiting for Wordle Game round to start" << std::endl;
-                    sleep();
-                    break;
-                }
-                case gameActive:
-                {
-                    displayKeyboard(keyColors);
-                    break;
-                }
+            case awaitLaunch:
+            {
+                std::cout << clearScreen;
+                std::cout << "Please launch the Wordle Game" << std::endl;
+                sleep();
+                break;
+            }
+            case awaitGame:
+            {
+                std::cout << clearScreen;
+                std::cout << "Waiting for Wordle Game round to start" << std::endl;
+                sleep();
+                break;
+            }
+            case gameActive:
+            {
+                displayKeyboard(keyColors);
+                break;
+            }
             }
             update = false;
         }
@@ -114,10 +119,11 @@ void runKeyboard()
         else if (getToken("gameStart"))
         {
             status = gameActive;
-            keyColors = resetColors();
+            keyColors = resetKeyColors();
             update = true;
         }
-        else if (getToken("gameExit")) {
+        else if (getToken("gameExit"))
+        {
             status = awaitLaunch;
             update = true;
         }

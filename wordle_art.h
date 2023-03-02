@@ -1,23 +1,16 @@
 #ifndef WORDLE_ART_H
 #define WORDLE_ART_H
 
-#include <windows.h>
 #include <iostream>
 #include <vector>
 
-enum color
-{
-    green = 10,
-    yellow = 14,
-    gray = 8,
-    grey = 8,
-    white = 15
-};
-
-void clearScreen()
-{
-    std::cout << "\x1B[2J\x1B[H";
-}
+#define green "\e[0;32m"
+#define grey "\033[38;5;245m"
+#define gray grey
+#define yellow "\e[0;33m"
+#define white "\e[0;37m"
+#define resetColors "\e[0m"
+#define clearScreen "\x1B[2J\x1B[H"
 
 std::string toUpper(std::string s)
 {
@@ -36,9 +29,9 @@ std::string toUpper(std::string s)
  * Returns a vector of colors with given size
  * Default initialized to white
  */
-std::vector<int> defaultColors(int size)
+std::vector<std::string> defaultColors(int size)
 {
-    std::vector<int> v;
+    std::vector<std::string> v;
     for (int i = 0; i < size; i++)
     {
         v.push_back(white);
@@ -54,36 +47,31 @@ std::vector<int> defaultColors(int size)
  *  ---
  * Precondition: letters.size() == colors.size()
  */
-void fancyLine(std::string letters, std::vector<int> colors, int space=0)
+void fancyLine(std::string letters, std::vector<std::string> colors, int space = 0)
 {
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     letters = toUpper(letters);
     std::cout << std::string(space, ' ');
     for (unsigned i = 0; i < letters.size(); i++)
     {
-        int currColor = colors[i];
-        SetConsoleTextAttribute(hConsole, currColor);
-        std::cout << " --- ";
+        std::string currColor = colors[i];
+        std::cout << currColor << " --- ";
     }
     std::cout << std::endl;
     std::cout << std::string(space, ' ');
     for (unsigned i = 0; i < letters.size(); i++)
     {
-        int currColor = colors[i];
-        SetConsoleTextAttribute(hConsole, currColor);
+        std::string currColor = colors[i];
         char curr = letters[i];
-        std::cout << "| " << curr << " |";
+        std::cout << currColor << "| " << curr << " |";
     }
     std::cout << std::endl;
     std::cout << std::string(space, ' ');
     for (unsigned i = 0; i < letters.size(); i++)
     {
-        int currColor = colors[i];
-        SetConsoleTextAttribute(hConsole, currColor);
-        std::cout << " --- ";
+        std::string currColor = colors[i];
+        std::cout << currColor << " --- ";
     }
-    SetConsoleTextAttribute(hConsole, white);
-    std::cout << std::endl;
+    std::cout << resetColors << std::endl;
 }
 
 void howToPlay()
@@ -100,7 +88,7 @@ void howToPlay()
     std::cout << "  you how close your guess was to the word.\n\n"
               << std::endl;
 
-    std::vector<int> colors = defaultColors(5);
+    std::vector<std::string> colors = defaultColors(5);
     colors[0] = green;
     std::string letters = "WEARY";
     fancyLine(letters, colors);
