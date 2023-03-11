@@ -72,13 +72,13 @@ Context(Statistics){
         std::ifstream stats(statsFile);
         Assert::That(stats.is_open());
         std::string actual;
-        Assert(getline(stats, actual));
+        getline(stats, actual);
         std::string expected = "hello51";
         Assert::That(actual, Equals(expected));
-        Assert(getline(stats, actual));
+        getline(stats, actual);
         expected = "speed60";
         Assert::That(actual, Equals(expected));
-        Assert(getline(stats, actual));
+        getline(stats, actual);
         expected = "poops61";
         Assert::That(actual, Equals(expected));
     }
