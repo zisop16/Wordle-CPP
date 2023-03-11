@@ -1,5 +1,7 @@
 wordle/main.exe
 keyboard/main.exe
+wordle/text.exe
+keyboard/test.exe
 wordle/data/history.txt
 .vscode/
 keyboard/tokens/
