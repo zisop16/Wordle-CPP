@@ -76,10 +76,11 @@ std::unordered_map<char, std::string> resetKeyColors()
     }
     return keyColors;
 }
-
-std::unordered_map<char, std::string> updateColors(std::unordered_map<char, std::string> keyColors) {
-    std::string colorPath = "color.txt";
-    if (!std::filesystem::exists(colorPath)) {
+static std::string colorPath = "color.txt";
+std::unordered_map<char, std::string> updateColors(std::unordered_map<char, std::string> keyColors)
+{
+    if (!std::filesystem::exists(colorPath))
+    {
         return keyColors;
     }
     /*
@@ -91,22 +92,35 @@ std::unordered_map<char, std::string> updateColors(std::unordered_map<char, std:
     ryellow
     */
     std::vector<std::string> lines;
-    std::ifstream colorFile (colorPath);
-    if (colorFile.is_open()) {
-        while (colorFile) {
+    std::ifstream colorFile(colorPath);
+    if (colorFile.is_open())
+    {
+        while (colorFile)
+        {
             std::string currLine;
             colorFile >> currLine;
             lines.push_back(currLine);
         }
     }
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 5; i++)
+    {
         std::string curr = lines.at(i);
         char letter = curr[0];
         std::string color = curr.substr(1, curr.size() - 1);
+        // If the key is already green, it should never be changed
+        // Also, if it is already yellow, it may only be changed to green
+        if (keyColors[letter] == green)
+        {
+            continue;
+        }
+        else if ((keyColors[letter] == yellow) && (color != green))
+        {
+            continue;
+        }
         keyColors[letter] = color;
     }
     colorFile.close();
-    std::remove("./color.txt");
+    std::remove(colorPath.c_str());
     return keyColors;
 }
 
@@ -154,8 +168,9 @@ void runKeyboard()
             status = gameActive;
             keyColors = resetKeyColors();
             update = true;
-        } 
-        else if (getToken("updateColors")) {
+        }
+        else if (getToken("updateColors"))
+        {
             keyColors = updateColors(keyColors);
             update = true;
         }

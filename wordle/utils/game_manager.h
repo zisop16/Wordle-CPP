@@ -263,21 +263,21 @@ int respondToOption()
     std::cout << clearScreen;
     switch (option)
     {
-    case play:
-        playGame();
-        break;
-    case guide:
-        howToPlay();
-        break;
-    case stats:
-        showStats();
-        break;
-    case userReset:
-        resetStats();
-        break;
-    case quit:
-        onExit();
-        break;
+        case play:
+            playGame();
+            break;
+        case guide:
+            howToPlay();
+            break;
+        case stats:
+            showStats();
+            break;
+        case userReset:
+            resetStats();
+            break;
+        case quit:
+            onExit();
+            break;
     }
     return option;
 }
