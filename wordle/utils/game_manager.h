@@ -31,7 +31,11 @@ void delete_dir_content(std::string dir_path)
 {
     for (auto &path : std::filesystem::directory_iterator(dir_path))
     {
-        std::filesystem::remove_all(path);
+        try {
+            std::filesystem::remove_all(path);
+        } catch (std::filesystem::filesystem_error &e) {
+            continue;
+        }
     }
 }
 
