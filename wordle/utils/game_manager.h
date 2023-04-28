@@ -17,6 +17,7 @@
 
 static std::vector<std::string> words;
 static std::unordered_set<std::string> allowed;
+static int wordLength;
 
 enum options
 {
@@ -78,7 +79,7 @@ std::vector<std::string> readLines(std::string filename)
     std::ifstream file(filename);
     if (file.is_open())
     {
-        while (file)
+        while (file.peek()!=EOF)
         {
             std::string currLine;
             file >> currLine;
@@ -88,21 +89,23 @@ std::vector<std::string> readLines(std::string filename)
     return lines;
 }
 
-void initializeWords()
+void initializeWords(std::string wordsPath, std::string allowedPath)
 {
-    words = readLines("data/words.txt");
-    std::vector<std::string> allowedWords = readLines("data/allowed.txt");
+    words = readLines(wordsPath);
+    std::vector<std::string> allowedWords = readLines(allowedPath);
     // Supposedly this line copies the vector into the set
     std::copy(allowedWords.begin(), allowedWords.end(), std::inserter(allowed, allowed.end()));
+    wordLength = words.at(0).size();
     for (unsigned int i = 0; i < words.size(); i++)
     {
         allowed.insert(words.at(i));
     }
+    
 }
 
 std::vector<std::string> guessColors(std::string guess, std::string correctWord)
 {
-    std::vector<std::string> colors = defaultColors(5);
+    std::vector<std::string> colors = defaultColors(wordLength);
     /* Map from char -> vector of indices for guess
      * Ex: guess = "hello"
      * characterIndices = {
@@ -115,7 +118,7 @@ std::vector<std::string> guessColors(std::string guess, std::string correctWord)
     // Have to use an ordered set so that indices are iterated over from smallest to largest
     std::unordered_map<char, std::set<int>> guessIndicesMap;
     std::unordered_map<char, std::set<int>> correctIndicesMap;
-    for (unsigned int i = 0; i < 5; i++)
+    for (unsigned int i = 0; i < wordLength; i++)
     {
         char guessChar = guess[i];
         char correctChar = correctWord[i];
@@ -175,7 +178,7 @@ std::string getGuess()
     {
         if (!firstIteration)
         {
-            std::cout << "Only 5 letter english words are allowed!" << std::endl;
+            std::cout << "Only English words of size " << wordLength << " are allowed!" << std::endl;
         }
         std::cout << (firstIteration ? "Enter guess: " : "Enter a different guess: ");
         std::cin >> guess;
@@ -189,10 +192,6 @@ std::string getGuess()
 void playGame()
 {
     generateToken("gameStart");
-    if (words.size() == 0)
-    {
-        initializeWords();
-    }
     int max = words.size();
     std::srand(std::time(nullptr));
     int randIndex = std::rand() % max;
@@ -288,10 +287,11 @@ void sigintHandler(int sig_num)
     exit(sig_num);
 }
 
-void runGame()
+void runGame(std::string wordsPath, std::string allowedPath)
 {
     signal(SIGINT, sigintHandler);
     generateToken("gameLaunch");
+    initializeWords(wordsPath, allowedPath);
     while (true)
     {
         std::cout << clearScreen;

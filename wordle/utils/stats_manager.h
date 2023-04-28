@@ -31,7 +31,7 @@ void addToStats(std::string correctWord, int attempts, bool foundSolution)
         {
             file << '\n';
         }
-        file << correctWord << std::to_string(attempts) << std::to_string(foundSolution ? 1 : 0);
+        file << std::to_string(correctWord.size()) << correctWord << std::to_string(attempts) << std::to_string(foundSolution ? 1 : 0);
     }
 }
 
@@ -50,16 +50,23 @@ void showStats()
         {
             std::string currLine;
             // Format of currline:
-            // wwwwwii
-            file >> currLine;
-            if (currLine.size() != 7)
+            // nw*nii
+            // If n=6, then example:
+            // 6losers11
+            std::getline(file, currLine);
+            std::cout << currLine << std::endl;
+            if (currLine.size() == 0) {
+                continue;
+            }
+            int wordLength = currLine[0] - '0';
+            if (currLine.size() != wordLength + 3)
             {
                 continue;
             }
             games.push_back(currLine);
-            std::string word = currLine.substr(0, 5);
-            int attempts = std::stoi(currLine.substr(5, 1));
-            bool foundSolution = (bool)(std::stoi(currLine.substr(6, 1)));
+            std::string word = currLine.substr(1, wordLength);
+            int attempts = std::stoi(currLine.substr(wordLength + 1, 1));
+            bool foundSolution = (bool)(std::stoi(currLine.substr(wordLength + 2, 1)));
             played += 1;
             if (foundSolution)
             {
@@ -148,10 +155,13 @@ void showStats()
     {
         std::string currGame = games.at(i);
         currGame = toUpper(currGame);
-        std::string currWord = currGame.substr(0, 5);
-        std::string currAttempts = currGame.substr(5, 1);
-        bool currWon = (bool)(std::stoi(currGame.substr(6, 1)));
-        std::cout << currWord << "           " << currAttempts << "      " << (currWon ? "Yes" : " No") << std::endl;
+        int wordLength = currGame[0] - '0';
+        int currAttempts = std::stoi(currGame.substr(wordLength + 1, 1));
+        bool currWon = (bool)(std::stoi(currGame.substr(wordLength + 2, 1)));
+
+        std::string currWord = currGame.substr(1, wordLength);
+        int space = 16 - wordLength;
+        std::cout << currWord << std::string(space, ' ') << currAttempts << "      " << (currWon ? "Yes" : " No") << std::endl;
     }
     std::cout << std::endl;
 }

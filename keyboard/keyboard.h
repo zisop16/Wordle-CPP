@@ -98,14 +98,17 @@ std::unordered_map<char, std::string> updateColors(std::unordered_map<char, std:
         while (colorFile)
         {
             std::string currLine;
-            colorFile >> currLine;
-            lines.push_back(currLine);
+            std::getline(colorFile, currLine);
+            if (currLine.size() != 0) {
+                lines.push_back(currLine);
+            }
         }
     }
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < lines.size(); i++)
     {
         std::string curr = lines.at(i);
         char letter = curr[0];
+        // std::cout << curr.size() << std::endl;
         std::string color = curr.substr(1, curr.size() - 1);
         // If the key is already green, it should never be changed
         // Also, if it is already yellow, it may only be changed to green

@@ -73,13 +73,13 @@ Context(Statistics){
         Assert::That(stats.is_open());
         std::string actual;
         getline(stats, actual);
-        std::string expected = "hello51";
+        std::string expected = "5hello51";
         Assert::That(actual, Equals(expected));
         getline(stats, actual);
-        expected = "speed60";
+        expected = "5speed60";
         Assert::That(actual, Equals(expected));
         getline(stats, actual);
-        expected = "poops61";
+        expected = "5poops61";
         Assert::That(actual, Equals(expected));
     }
 };
